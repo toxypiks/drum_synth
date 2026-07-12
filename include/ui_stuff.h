@@ -1,0 +1,126 @@
+#ifndef UI_STUFF_H_
+#define UI_STUFF_H_
+
+#include <raylib.h>
+#include <raymath.h>
+#include <stddef.h>
+#include "ray_out_buffer.h"
+#include "stb_ds.h"
+
+#define DA_INIT_CAP 256
+#define da_append(da, item)                                                      \
+  do {                                                                           \
+    if ((da)->count >= (da)->capacity) {                                         \
+      (da)->capacity = ((da)->capacity == 0) ? DA_INIT_CAP : (da)->capacity * 2; \
+      (da)->items =                                                              \
+          realloc((da)->items, (da)->capacity * sizeof(*(da)->items));           \
+      assert((da)->items != NULL && "Buy more RAM lol");                         \
+    }                                                                            \
+                                                                                 \
+    (da)->items[(da)->count++] = (item);                                         \
+  } while (0)
+
+#define layout_stack_slot(ls)                                                    \
+  (assert((ls)->count > 0),                                                      \
+   layout_slot_loc(&(ls)->items[(ls)->count - 1], __FILE__, __LINE__))
+#define layout_stack_pop(ls)                                                     \
+  do {                                                                           \
+    assert((ls)->count > 0);                                                     \
+    (ls)->count -= 1;                                                            \
+  } while (0)
+
+typedef struct UiRect {
+  float x;
+  float y;
+  float w;
+  float h;
+} UiRect;
+
+typedef enum LayoutOrient {
+  LO_HORZ,
+  LO_VERT,
+} LayoutOrient;
+
+typedef struct Layout {
+  LayoutOrient orient;
+  UiRect rect;
+  size_t count;
+  size_t i;
+  float gap;
+} Layout;
+
+typedef struct LayoutStack {
+  Layout *items;
+  size_t count;
+  size_t capacity;
+} LayoutStack;
+
+typedef struct SliderState {
+  bool scroll_dragging;
+  float scroll;
+} SliderState;
+
+typedef struct Tone {
+  float current_vol;
+} Tone;
+
+typedef struct UiADSR {
+  SliderState attack;
+  SliderState decay;
+  SliderState sustain;
+  SliderState release;
+  Shader rec_shader;
+  Shader circ_shader;
+  int rec_shader_color_param_loc;
+  int circ_shader_color_param_loc;
+} UiADSR;
+
+typedef struct Text {
+  float freq;
+  float vol;
+} Text;
+
+typedef enum KeyState {
+    KEY_PRESSED,
+    KEY_STILL_PRESSED,
+    KEY_RELEASED
+} KeyState;
+
+// TODO just testing octave widget
+// copy this to ui stuff
+// for now dummy values
+typedef struct KeyboardPressedKeyMap {
+    int key;
+    KeyState value;
+} KeyboardPressedKeyMap;
+
+typedef struct UiStuff {
+  RenderTexture2D screen;
+  SliderState slider_vol;
+  SliderState slider_freq;
+  Text text;
+  UiADSR adsr;
+} UiStuff;
+
+UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height);
+void ui_stuff_clear(UiStuff*);
+
+UiRect ui_rect(float x, float y, float w, float h);
+UiRect layout_slot_loc(Layout *l, const char *file_path, int line);
+void layout_stack_push(LayoutStack *ls, LayoutOrient orient, UiRect rect, size_t count, float gap);
+void layout_stack_delete(LayoutStack *ls);
+void widget(UiRect r, Color c);
+void slider_widget(UiRect r, SliderState *slider_state);
+void start_button_widget(UiRect r, Color c, bool *is_pressed);
+void reset_button_widget(UiRect r, Color c, bool *is_pressed);
+void oct_trans_button_widget(UiRect r, int *octave, bool *left_is_pressed, bool *right_is_pressed);
+void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c);
+void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float *adsr_heights, float *adsr_widths_raw, int adsr_arr_len);
+void adsr_widget(UiRect rect, UiADSR *adsr, float* adsr_height, float* adsr_width, int adsr_arr_len);
+void keyboard_widget(UiRect rect, KeyboardPressedKeyMap** keys_map_out,  int* last_mouse_down_key, KeyboardPressedKeyMap* keys_map_in, size_t octave);
+void text_widget(UiRect r, Text *text);
+void amplitude_widget(UiRect rect, SliderState* base_amp, SliderState* ov1_amp, SliderState* ov2_amp, SliderState* noise_amp);
+void decay_widget(UiRect rect, SliderState* base_decay, SliderState* ov1_decay, SliderState* ov2_decay, SliderState* noise_decay);
+void drum_play_freq(UiRect rect, SliderState* base_freq, bool* play_is_pressed);
+
+#endif // UI_STUFF_H
