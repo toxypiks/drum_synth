@@ -208,6 +208,26 @@ target_link_libraries(synth_model
   envelop
   )
 
+set(DRUM_MODEL_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/drum_model.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/drum_model.h
+  )
+
+add_library(drum_model)
+target_sources(drum_model
+ PRIVATE
+  ${DRUM_MODEL_SRC}
+  )
+
+target_include_directories(drum_model
+ PRIVATE
+ ${INCLUDE}
+)
+
+target_link_libraries(drum_model
+   m
+)
+  
 set(THREAD_STUFF_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/thread_stuff.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/thread_stuff.h
