@@ -285,8 +285,11 @@ target_include_directories(msg_handler
 # model_gen_signal library
 set(MODEL_GEN_SIGNAL_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/model_gen_signal.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/tone_handler.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/model_gen_signal.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/tone_handler.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/tone_handler.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/drum_tone_handler.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/drum_tone_handler.h
 )
 
 add_library(model_gen_signal)
@@ -302,6 +305,7 @@ target_include_directories(model_gen_signal
 
 target_link_libraries(model_gen_signal
   synth_model
+  drum_model
   msg_handler
   midi_msg
   m

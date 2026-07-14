@@ -42,7 +42,7 @@ void drum_model_process(DrumModel* drum_model,
     }
 }
 
-void synth_model_clear(DrumModel* drum_model)
+void drum_model_clear(DrumModel* drum_model)
 {
     free(drum_model);
 }

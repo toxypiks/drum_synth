@@ -27,7 +27,7 @@ void drum_model_process(DrumModel* drum_model,
                         float* drum_buf,
                         size_t drum_buf_size);
 
-void synth_model_clear(DrumModel* drum_model);
+void drum_model_clear(DrumModel* drum_model);
 
 
 #endif // DRUM_MODEL_H

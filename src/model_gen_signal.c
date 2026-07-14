@@ -5,12 +5,14 @@
 #include <string.h>
 #include <assert.h>
 #include "synth_model.h"
+#include "drum_model.h"
 #include "thread_stuff.h"
 #include "adsr.h"
 #include "msg_handler.h"
 #include "midi_msg.h"
 #include <math.h>
 #include "tone_handler.h"
+#include "drum_tone_handler.h"
 #include "adsr_display_msg.h"
 
 #define STB_DS_IMPLEMENTATION
@@ -43,15 +45,17 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
         .adsr_default = {0},
         .raylib_msg_queue = &(thread_stuff->raylib_msg_queue)
     };
+    DrumToneHandler drum_tone_handler = {
+        .drum_tone_map = NULL,
+        .key_idx = 0
+    };
 
     MsgHdl msg_hdl = {0};
 
     msg_hdl_add_key2fct(&msg_hdl, "adsr", set_adsr_wrapper, (void*)&tone_handler);
     msg_hdl_add_key2fct(&msg_hdl, "vol", set_float_value, (void*)&vol);
     msg_hdl_add_key2fct(&msg_hdl, "midi_msg", set_tone_wrapper, (void*)&tone_handler);
-
-    // TODO drum sound
-    msg_hdl_add_key2fct(&msg_hdl, "drum", set_tone_wrapper, (void*)&tone_handler);
+    msg_hdl_add_key2fct(&msg_hdl, "drum", set_drum_tone_wrapper, (void*)&drum_tone_handler);
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
