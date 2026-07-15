@@ -54,3 +54,23 @@ void drum_tone_handler_free_hashmap(DrumToneHandler *drum_tone_handler)
 {
     hmfree(drum_tone_handler->drum_tone_map);
 }
+
+void print_drum_tone_handler_hash_map(DrumToneHandler *drum_tone_handler)
+{
+    int drum_tone_handler_len = hmlen(drum_tone_handler->drum_tone_map);
+    printf("print_hash_print(): drum_tone_handler %d items\n", drum_tone_handler_len);
+    if (drum_tone_handler_len > 0) {
+        for (size_t i = 0; i < drum_tone_handler_len; ++i) {
+            printf("key: %d, base_freq: %f, base_amp: %f, base_decay: %f, is_end: %d, idx: %d\n",
+                   drum_tone_handler->drum_tone_map[i].key,
+                   drum_tone_handler->drum_tone_map[i].value.base_freq,
+                   drum_tone_handler->drum_tone_map[i].value.base_amp,
+                   drum_tone_handler->drum_tone_map[i].value.base_decay,
+                   drum_tone_handler->drum_tone_map[i].value.is_end,
+                   drum_tone_handler->drum_tone_map[i].value.sample_idx
+            );
+        }
+    } else {
+        printf("print_hash_print(): nothing in the hashmap\n");
+    }
+}

@@ -61,6 +61,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
         msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
         msg_hdling(&msg_hdl, &thread_stuff->jack_stuff->midi_msg_queue);
 
+        print_drum_tone_handler_hash_map(&drum_tone_handler);
         size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
         float signal_buf[1024];
 
@@ -68,6 +69,9 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
         if (num_bytes < 4800 * sizeof(float)) {
             const size_t tone_buf_size = 1024;
             float tone_buf[tone_buf_size];
+
+            const size_t drum_tone_buf_size = 1024;
+            float drum_tone_buf[drum_tone_buf_size];
 
             const size_t drum_buf_size = 1024;
             float drum_buf[drum_buf_size];
@@ -87,7 +91,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                     adsr_display_msg.key = tone_handler.tone_map[i].key;
                     if (i == 0) {
                         for (size_t j = 0; j < 1024; ++j) {
-                            signal_buf[j] = tone_buf[j] + drum_buf[j];
+                            signal_buf[j] = tone_buf[j];
                         }
                     } else {
                         for (size_t j = 0; j < 1024; ++j) {
@@ -101,6 +105,20 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                 }
             } else {
                 memset(signal_buf, 0, 1024*sizeof(float));
+            }
+            int drum_model_length = drum_tone_handler_len(&drum_tone_handler);
+
+            if (drum_model_length > 0) {
+                for (size_t i = 0; i < drum_model_length; ++i) {
+                    memset(tone_buf, 0, drum_tone_buf_size*sizeof(float));
+                    drum_model_process(&drum_tone_handler.drum_tone_map[i].value,
+                                       tone_buf,
+                                       tone_buf_size);
+                    // TODO: need better mixing
+                    for (size_t j = 0; j < 1024; ++j) {
+                        signal_buf[j] += drum_tone_buf[j];
+                    }
+                }
             }
 
             tone_handler_cleanup(&tone_handler);
