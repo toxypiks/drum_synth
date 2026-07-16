@@ -121,6 +121,6 @@ void keyboard_widget(UiRect rect, KeyboardPressedKeyMap** keys_map_out,  int* la
 void text_widget(UiRect r, Text *text);
 void amplitude_widget(UiRect rect, SliderState* base_amp, SliderState* ov1_amp, SliderState* ov2_amp, SliderState* noise_amp);
 void decay_widget(UiRect rect, SliderState* base_decay, SliderState* ov1_decay, SliderState* ov2_decay, SliderState* noise_decay);
-void drum_play_freq(UiRect rect, SliderState* base_freq, bool* play_is_pressed);
+void drum_play_freq(UiRect rect, SliderState* base_freq, SliderState* fm_decay, bool* play_is_pressed);
 
 #endif // UI_STUFF_H

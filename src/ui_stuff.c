@@ -603,12 +603,13 @@ void decay_widget(UiRect rect, SliderState* base_decay, SliderState* ov1_decay, 
     layout_stack_delete(&ls);
 }
 
-void drum_play_freq(UiRect rect, SliderState* base_freq, bool* play_is_pressed) {
+void drum_play_freq(UiRect rect, SliderState* base_freq, SliderState* fm_decay, bool* play_is_pressed) {
     Color play_color = PINK;
     LayoutStack ls = {0};
-    layout_stack_push(&ls, LO_VERT, rect, 2, 0);
+    layout_stack_push(&ls, LO_VERT, rect, 3, 0);
     start_button_widget(layout_stack_slot(&ls), play_color, play_is_pressed);
     slider_widget(layout_stack_slot(&ls), base_freq);
+    slider_widget(layout_stack_slot(&ls), fm_decay);
     layout_stack_pop(&ls);
     layout_stack_delete(&ls);
 }

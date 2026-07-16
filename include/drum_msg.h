@@ -5,6 +5,7 @@
 
 typedef struct DrumMsg {
     float base_freq;
+    float fm_decay;
     float base_amp;
     float ov1_amp;
     float ov2_amp;

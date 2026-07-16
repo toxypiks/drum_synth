@@ -84,6 +84,8 @@ int main(void) {
 
     SliderState base_freq = {0};
     base_freq.scroll = 1.0;
+    SliderState fm_decay = {0};
+    fm_decay.scroll = 0.0;
     bool play_is_pressed = false;
     bool play_is_pressed_last = false;
     SliderState base_amp = {0};
@@ -154,6 +156,7 @@ int main(void) {
             drum_msg.noise_decay = noise_decay.scroll;
             drum_msg.base_decay = base_decay.scroll;
             drum_msg.base_freq = 50.0 + 50*base_freq.scroll;
+            drum_msg.fm_decay = fm_decay.scroll;
             lf_queue_push(&thread_stuff->model_msg_queue, "drum", (void*)&drum_msg, sizeof(DrumMsg));
         }
         play_is_pressed_last = play_is_pressed;
@@ -220,7 +223,7 @@ int main(void) {
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls),3,0);
 
         // adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_heights, adsr_lengths, adsr_display_map_len);
-        drum_play_freq(layout_stack_slot(&ls), &base_freq, &play_is_pressed);
+        drum_play_freq(layout_stack_slot(&ls), &base_freq, &fm_decay, &play_is_pressed);
         is_virt_keyboard_on_prev = is_virt_keyboard_on;
         virt_keyboard_key_prev = virt_keyboard_key;
 

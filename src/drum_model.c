@@ -16,9 +16,8 @@ void drum_model_process(DrumModel* drum_model,
                         size_t drum_buf_size)
 {
     size_t samplerate = 48000;
-    float base_freq_norm = (drum_model->base_freq*2*M_PI)/(float)(samplerate);
-    float ov1_freq_norm = 2*base_freq_norm;
-    float ov2_freq_norm = 4*base_freq_norm;
+    float base_freq_norm_min = (drum_model->base_freq*2*M_PI)/(float)(samplerate);
+    float base_freq_norm_extra = 0.5 * base_freq_norm_min;
 
     float base[drum_buf_size];
     float ov1[drum_buf_size];
@@ -28,6 +27,11 @@ void drum_model_process(DrumModel* drum_model,
     size_t si = drum_model->sample_idx;
     for(int i = 0; i < drum_buf_size; i++)
     {
+        float fm_decay_t = decay(i+si, samplerate*drum_model->fm_decay);
+        float base_freq_norm = base_freq_norm_min + 2.0*fm_decay_t*base_freq_norm_extra;
+        float ov1_freq_norm = 2*base_freq_norm;
+        float ov2_freq_norm = 4*base_freq_norm;
+
         base[i] = decay(i+si, samplerate*drum_model->base_decay) * drum_model->base_amp * sin(base_freq_norm*(i+si));
         ov1[i] = decay(i+si, samplerate*drum_model->ov1_decay) * drum_model->ov1_amp * sin(ov1_freq_norm*(i+si));
         ov2[i] = decay(i+si, samplerate*drum_model->ov2_decay) * drum_model->ov2_amp * sin(ov2_freq_norm*(i+si));

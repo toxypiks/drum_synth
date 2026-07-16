@@ -8,6 +8,7 @@
 
 typedef struct DrumModel{
     float base_freq;
+    float fm_decay;
 
     float noise_amp;
     float base_amp;

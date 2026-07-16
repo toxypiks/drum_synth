@@ -17,6 +17,7 @@ void set_drum_tone(DrumMsg *drum_msg_new, DrumToneHandler *drum_tone_handler)
     int key = drum_tone_handler->key_idx++;
 
     DrumModel drum_model = {.base_freq = drum_msg_new->base_freq,
+                            .fm_decay = drum_msg_new->fm_decay,
                             .noise_amp = drum_msg_new->noise_amp,
                             .base_amp = drum_msg_new->base_amp,
                             .ov1_amp = drum_msg_new->ov1_amp,
