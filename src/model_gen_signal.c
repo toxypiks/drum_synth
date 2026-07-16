@@ -32,7 +32,6 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw)
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
     ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
-    SynthModel* synth_model = create_synth_model();
 
     ADSR adsr_values = {0};
     float vol = 0.0;
@@ -73,9 +72,6 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
             const size_t drum_tone_buf_size = 1024;
             float drum_tone_buf[drum_tone_buf_size];
 
-            const size_t drum_buf_size = 1024;
-            float drum_buf[drum_buf_size];
-
             int synth_model_length = tone_handler_len(&tone_handler);
 
             if (synth_model_length > 0) {
@@ -112,8 +108,8 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                 for (size_t i = 0; i < drum_model_length; ++i) {
                     memset(tone_buf, 0, drum_tone_buf_size*sizeof(float));
                     drum_model_process(&drum_tone_handler.drum_tone_map[i].value,
-                                       tone_buf,
-                                       tone_buf_size);
+                                       drum_tone_buf,
+                                       drum_tone_buf_size);
                     // TODO: need better mixing
                     for (size_t j = 0; j < 1024; ++j) {
                         signal_buf[j] += drum_tone_buf[j];
@@ -122,6 +118,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
             }
 
             tone_handler_cleanup(&tone_handler);
+            drum_tone_handler_cleanup(&drum_tone_handler);
             // TODO Volume on databuf
 
             // TODO: check capacity of buffer independently
@@ -135,8 +132,8 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
             usleep(2000);
         }
     }
-    synth_model_clear(synth_model);
     tone_handler_free_hashmap(&tone_handler);
+    drum_tone_handler_free_hashmap(&drum_tone_handler);
     printf("model_gen_signal_thread ended, Good bye! \n");
     return NULL;
 }

@@ -83,16 +83,25 @@ int main(void) {
     // drum synth
 
     SliderState base_freq = {0};
+    base_freq.scroll = 1.0;
     bool play_is_pressed = false;
     bool play_is_pressed_last = false;
     SliderState base_amp = {0};
+    base_amp.scroll = 0.7;
     SliderState ov1_amp = {0};
+    ov1_amp.scroll = 0.2;
     SliderState ov2_amp = {0};
+    ov2_amp.scroll = 0.1;
     SliderState noise_amp = {0};
+    noise_amp.scroll = 0.1;
     SliderState base_decay = {0};
+    base_decay.scroll = 1.0;
     SliderState ov1_decay = {0};
+    ov1_decay.scroll = 0.5;
     SliderState ov2_decay = {0};
+    ov2_decay.scroll = 0.25;
     SliderState noise_decay = {0};
+    noise_decay.scroll = 0.2;
 
     DrumMsg drum_msg = {0};
 
@@ -147,6 +156,7 @@ int main(void) {
             drum_msg.base_freq = 50.0 + 50*base_freq.scroll;
             lf_queue_push(&thread_stuff->model_msg_queue, "drum", (void*)&drum_msg, sizeof(DrumMsg));
         }
+        play_is_pressed_last = play_is_pressed;
         // send midi msg
         for (size_t i = 0; i < hmlen(keys_map_out); i++) {
             if(keys_map_out[i].value == KEY_PRESSED) {
